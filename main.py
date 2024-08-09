@@ -1,18 +1,17 @@
-import customtkinter as ctk
 import tkinter as tk
-from PIL import Image, ImageTk
 from time import strftime
+import customtkinter as ctk
+from PIL import Image, ImageTk
 
 class ClockFrame(ctk.CTkFrame):
     def __init__(self, master=None, **kwargs):
         super().__init__(master, **kwargs)
-        #self.configure(corner_radius=20, fg_color='#101010')  # Configura el marco
-        self.label = ctk.CTkLabel(self, text="", font=("Arial", 24), fg_color='#2e2e2e')
+        self.label = ctk.CTkLabel(self, text="", font=("Arial", 80), fg_color='#101010')
         self.label.pack(expand=True, fill=tk.BOTH)
         self.update_time()
 
     def update_time(self):
-        now = strftime("%H:%M:%S")  # Obtiene la hora actual en formato HH:MM:SS
+        now = strftime("%H:%M:%S")  
         self.label.configure(text=now)
         self.after(1000, self.update_time) 
 
@@ -22,12 +21,12 @@ class RoundedWindow(ctk.CTk):
         super().__init__()
         self.geometry("800x800")
         self.overrideredirect(True)
-        self.center_window(800,800)
+        self.center_window(800, 800)
         
         self.wm_attributes("-alpha", 1)
         self.wm_attributes("-transparentcolor", "#2e2e2e")
         
-        self.image2 = Image.open(".\\images\\obsidian_icon.png").resize((50, 50)) 
+        self.image2 = Image.open(".\\assets\\obsidian_icon.png").resize((50, 50)) 
         self.photo = ImageTk.PhotoImage(self.image2)
         
         self.canvas = tk.Canvas(self, width=800, height=800, bg='#2e2e2e', bd=0, highlightthickness=0)
@@ -41,7 +40,7 @@ class RoundedWindow(ctk.CTk):
         self.create_background()
         self.create_first_layer()
         self.create_clock()
-        self.create_content()
+        self.create_content_from_file("config.txt")
 
     def center_window(self, width, height):
         screen_width = self.winfo_screenwidth()
@@ -62,23 +61,23 @@ class RoundedWindow(ctk.CTk):
         
     def create_first_layer(self):
         self.flayer_frame1 = ctk.CTkFrame(
-                    self.background_frame,
-                    corner_radius=20,
-                    fg_color='#242424',  
-                    width=400,
-                    height=100
-                )
+            self.background_frame,
+            corner_radius=20,
+            fg_color='#242424',  
+            width=400,
+            height=100
+        )
         self.flayer_frame1.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
         self.background_frame.grid_columnconfigure(0, weight=1)
         self.background_frame.grid_rowconfigure(0, weight=1)
         
         self.flayer_frame2 = ctk.CTkFrame(
-                    self.background_frame,
-                    corner_radius=20,
-                    fg_color='#242424',  
-                    width=400,
-                    height=300
-                )
+            self.background_frame,
+            corner_radius=20,
+            fg_color='#242424',  
+            width=400,
+            height=300
+        )
         self.flayer_frame2.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
         self.background_frame.grid_columnconfigure(0, weight=1)
         self.background_frame.grid_rowconfigure(1, weight=1)
@@ -87,12 +86,20 @@ class RoundedWindow(ctk.CTk):
         clock_frame = ClockFrame(self.flayer_frame1, corner_radius=40, fg_color='#101010', width=200, height=100)
         clock_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
         
-    def create_content(self):
-        #frame = ctk.CTkFrame(self.overlay_frame, corner_radius=40, fg_color='#101010')  
-        #frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER, relwidth=1, relheight=1)
+    def create_content_from_file(self, filename):
+        #with open(filename, 'r') as file:
+         
+         #   rows = int(file.readline().strip())
         
-        rows = 3
+        with open(filename, 'r') as file:
+            lines = file.readlines()
+        
+        rows = len(lines)
         columns = 3
+        
+        for frame in self.frames:
+            frame.destroy()
+        self.frames.clear()
         
         for row in range(rows):
             for col in range(columns):
@@ -106,8 +113,7 @@ class RoundedWindow(ctk.CTk):
                 custom_frame.grid(row=row, column=col, padx=10, pady=10, sticky="nsew")
                 self.frames.append(custom_frame)
                 
-                
-                img_label = ctk.CTkLabel(custom_frame, image=self.photo,text="", bg_color='#242424')
+                img_label = ctk.CTkLabel(custom_frame, image=self.photo, text="", bg_color='#242424')
                 img_label.pack(padx=10, pady=10, expand=True, fill=tk.BOTH)
                 
         for col in range(columns):
@@ -120,19 +126,17 @@ class RoundedWindow(ctk.CTk):
 
     def set_active_frame(self, frame):
         if self.active_frame:
-            self.active_frame.configure(fg_color='#242424')  # Reset color
+            self.active_frame.configure(fg_color='#242424')  
         self.active_frame = frame
-        self.active_frame.configure(fg_color='#3e3e3e')  # Change color to indicate active state
+        self.active_frame.configure(fg_color='#3e3e3e')  
 
     def on_right_arrow(self, event):
-        
         if self.active_frame:
             index = self.frames.index(self.active_frame)
             next_index = (index + 1) % len(self.frames)
             self.set_active_frame(self.frames[next_index])
             
     def on_left_arrow(self, event):
-        
         if self.active_frame:
             index = self.frames.index(self.active_frame)
             prev_index = (index - 1) % len(self.frames)

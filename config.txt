@@ -1,0 +1,7 @@
+logo1 nombre1 ubicacion1
+logo2 nombre2 ubicacion2
+logo3 nombre3 ubicacion3
+logo4 nombre4 ubicacion4
+logo5 nombre5 ubicacion5
+logo6 nombre6 ubicacion6
+logo7 nombre7 ubicacion7
