@@ -26,8 +26,8 @@ class RoundedWindow(ctk.CTk):
         self.wm_attributes("-alpha", 1)
         self.wm_attributes("-transparentcolor", "#2e2e2e")
         
-        #self.image2 = Image.open(".\\assets\\obsidian_icon.png").resize((50, 50)) 
-        #self.photo = ImageTk.PhotoImage(self.image2)
+        self.image2 = Image.open(".\\assets\\obsidian_icon.png").resize((50, 50)) 
+        self.photo = ImageTk.PhotoImage(self.image2)
         
         self.canvas = tk.Canvas(self, width=800, height=800, bg='#2e2e2e', bd=0, highlightthickness=0)
         self.canvas.pack(fill=tk.BOTH, expand=True)
@@ -82,7 +82,7 @@ class RoundedWindow(ctk.CTk):
         self.background_frame.grid_columnconfigure(0, weight=1)
         self.background_frame.grid_rowconfigure(1, weight=1)
         
-    def create_clock(self):
+    def create_clock(self): 
         clock_frame = ClockFrame(self.flayer_frame1, corner_radius=40, fg_color='#101010', width=200, height=100)
         clock_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
         

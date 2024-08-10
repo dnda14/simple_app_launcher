@@ -1,8 +1,21 @@
 import tkinter as tk
+from time import strftime
+
 import customtkinter as ctk
 from PIL import Image, ImageTk
 
+class ClockFrame(ctk.CTkFrame):
+    def __init__(self, master=None, **kwargs):
+        super().__init__(master, **kwargs)
+        self.label = ctk.CTkLabel(self, text="", font=("Arial", 80), fg_color='#101010')
+        self.label.pack(expand=True, fill=tk.BOTH)
+        self.update_time()
 
+    def update_time(self):
+        now = strftime("%H:%M:%S")          
+        self.label.configure(text=now)
+        self.after(1000, self.update_time) 
+        
 def read_data_from_file(filename):
     items = []
     with open(filename, "r") as file:
@@ -73,10 +86,20 @@ class GridFrame(ctk.CTkFrame):
 class MyApp(ctk.CTk):
     def __init__(self):
         super().__init__()
-    
-        self.title("GridFrame Example")
-        self.geometry("600x200")
 
+        #self.title("GridFrame Example")
+        self.geometry("600x200")
+        self.overrideredirect(True)
+        self.center_window(800, 800)
+
+        self.wm_attributes("-alpha", 1)
+        self.wm_attributes("-transparentcolor", "#2e2e2e")
+        
+        self.base_layer = tk.Canvas(self, width=800, height=800, bg='#2e2e2e', bd=0, highlightthickness=0)
+        self.base_layer.pack(expand=True, fill=tk.BOTH)
+        
+        self.create_grid_layer()
+        self.create_clock()
         items = read_data_from_file("config.txt")
 
         self.lista_grid = []
@@ -84,7 +107,7 @@ class MyApp(ctk.CTk):
         for i in range(self.n_rows):
             self.lista_grid.append(
                 GridFrame(
-                    self,
+                    self.flayer_frame2,
                     color="#000000",
                     items=items[i],
                     corner_radius=20,
@@ -101,6 +124,14 @@ class MyApp(ctk.CTk):
         self.bind("<Up>", self.show_frame_below)
         self.bind("<Down>", self.show_frame_up)
 
+    def center_window(self, width, height):
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        x = (screen_width - width) // 2
+        y = (screen_height - height) // 2
+        self.geometry(f'{width}x{height}+{x}+{y}')
+    
+    
     def show_frame_below(self, event):
         self.current_position = (self.current_position + 1) % self.n_rows
         self.switch_frame(self.lista_grid[self.current_position])
@@ -115,7 +146,32 @@ class MyApp(ctk.CTk):
         self.current_frame = new_frame
         self.current_frame.pack(expand=True, fill=tk.BOTH, padx=20, pady=20)
 
-
+    def create_grid_layer(self):
+        self.flayer_frame1 = ctk.CTkFrame(
+            self.base_layer,
+            corner_radius=20,
+            fg_color='#242424',  
+            width=400,
+            height=100
+        )
+        self.flayer_frame1.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+        self.base_layer.grid_columnconfigure(0, weight=1)
+        self.base_layer.grid_rowconfigure(0, weight=1)
+        
+        self.flayer_frame2 = ctk.CTkFrame(
+            self.base_layer,
+            corner_radius=20,
+            fg_color='#242424',  
+            width=400,
+            height=300
+        )
+        self.flayer_frame2.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+        self.base_layer.grid_columnconfigure(0, weight=1)
+        self.base_layer.grid_rowconfigure(1, weight=1)
+    
+    def create_clock(self):
+        clock_frame = ClockFrame(self.flayer_frame1, corner_radius=40, fg_color='#101010', width=200, height=100)
+        clock_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 if __name__ == "__main__":
     app = MyApp()
     app.mainloop()
