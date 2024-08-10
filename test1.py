@@ -7,7 +7,7 @@ from PIL import Image, ImageTk
 class ClockFrame(ctk.CTkFrame):
     def __init__(self, master=None, **kwargs):
         super().__init__(master, **kwargs)
-        self.label = ctk.CTkLabel(self, text="", font=("Arial", 80), fg_color='#101010')
+        self.label = ctk.CTkLabel(self, text="", font=("Arial", 80), text_color="#cc00ff", fg_color='#242424')
         self.label.pack(expand=True, fill=tk.BOTH)
         self.update_time()
 
@@ -34,7 +34,7 @@ def read_data_from_file(filename):
 
 
 class GridFrame(ctk.CTkFrame):
-    def __init__(self, master=None, color="#eeeeee", items=None, **kwargs):
+    def __init__(self, master=None, color="#242424", items=None, **kwargs):
         super().__init__(master, **kwargs)
         self.color = color
         self.list_items = items if items else []
@@ -48,20 +48,24 @@ class GridFrame(ctk.CTkFrame):
     def create_grid_items(self):
         for i, item in enumerate(self.list_items):
             cell_frame = ctk.CTkFrame(
-                self, corner_radius=10, fg_color="#004400", width=100, height=100
+                self, corner_radius=10, fg_color="#242424", width=100, height=100
             )
-            cell_frame.grid(row=0, column=i, padx=5, pady=5, sticky="nsew")
-
+            cell_frame.grid(row=0, column=i, padx=0, pady=0, sticky="nsew")
+            
+            cell_frame.grid_rowconfigure(0, weight=1)
+            cell_frame.grid_rowconfigure(1, weight=1)
+            cell_frame.grid_columnconfigure(0, weight=1)
+            
             logo_frame = ctk.CTkFrame(
                 cell_frame, corner_radius=10, fg_color=self.color, width=100, height=100
             )
-            logo_frame.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
+            logo_frame.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
             logo_frame.grid_rowconfigure(0, weight=1)
             logo_frame.grid_columnconfigure(0, weight=1)
 
             logo_image_path = str(item.get("logo"))
             if logo_image_path != "":
-                image_logo = Image.open(logo_image_path).resize((50, 50))
+                image_logo = Image.open(logo_image_path).resize((100, 100))
 
                 photo = ImageTk.PhotoImage(image_logo)
                 label_logo = ctk.CTkLabel(
@@ -70,17 +74,17 @@ class GridFrame(ctk.CTkFrame):
             else:
                 label_logo = ctk.CTkLabel(logo_frame, text="", bg_color="#242424")
             
-            label_logo.grid(row=0,column=0,padx=10, pady=10, sticky="nsew")
-            label_logo.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
+            label_logo.grid(row=0,column=0,padx=0, pady=0, sticky="nsew")
+            label_logo.pack(expand=True, fill=tk.BOTH, padx=0, pady=0)
 
             title_frame = ctk.CTkFrame(
-                cell_frame, corner_radius=10, fg_color=self.color, width=100, height=100
+                cell_frame, corner_radius=10, fg_color="#242424", width=130, height=0
             )
-            title_frame.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
+            title_frame.grid(row=1, column=0, padx=0, pady=10, sticky="nsew")
             label_title = ctk.CTkLabel(
-                title_frame, text=item.get("nombre", f"Item {i+1}")
+                title_frame, text=item.get("nombre", f"Item {i+1}"), font=("Arial", 20), text_color="#cc00ff"
             )
-            label_title.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
+            label_title.pack(expand=True, fill=tk.BOTH, padx=0, pady=0)
 
 
 class MyApp(ctk.CTk):
@@ -88,15 +92,22 @@ class MyApp(ctk.CTk):
         super().__init__()
 
         #self.title("GridFrame Example")
-        self.geometry("600x200")
         self.overrideredirect(True)
-        self.center_window(800, 800)
-
+        self.center_window(450, 450)
         self.wm_attributes("-alpha", 1)
-        self.wm_attributes("-transparentcolor", "#2e2e2e")
+        self.wm_attributes("-transparentcolor", "#ffffff")
         
-        self.base_layer = tk.Canvas(self, width=800, height=800, bg='#2e2e2e', bd=0, highlightthickness=0)
-        self.base_layer.pack(expand=True, fill=tk.BOTH)
+        #self.base_layer = tk.Canvas(self, width=800, height=800, bg='#2a2e2e', bd=0, highlightthickness=0)
+        #self.base_layer.pack(expand=True, fill=tk.BOTH)
+        self.base_layer = ctk.CTkFrame(
+            self,
+            corner_radius=20,
+            fg_color='#ffffff',
+            bg_color='#ffffff',
+            width=400,
+            height=400
+        )
+        self.base_layer.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
         
         self.create_grid_layer()
         self.create_clock()
@@ -111,14 +122,14 @@ class MyApp(ctk.CTk):
                     color="#000000",
                     items=items[i],
                     corner_radius=20,
-                    fg_color="#cccccc",
+                    fg_color="#242424",
                 )
             )
 
         self.current_position = 0
         self.current_frame = self.lista_grid[self.current_position]
         self.lista_grid[self.current_position].pack(
-            expand=True, fill=tk.BOTH, padx=20, pady=20
+            expand=True, fill=tk.BOTH, padx=0, pady=20
         )
 
         self.bind("<Up>", self.show_frame_below)
@@ -130,6 +141,7 @@ class MyApp(ctk.CTk):
         x = (screen_width - width) // 2
         y = (screen_height - height) // 2
         self.geometry(f'{width}x{height}+{x}+{y}')
+        self.config(bg='#ffffff')
     
     
     def show_frame_below(self, event):
@@ -154,7 +166,7 @@ class MyApp(ctk.CTk):
             width=400,
             height=100
         )
-        self.flayer_frame1.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+        self.flayer_frame1.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
         self.base_layer.grid_columnconfigure(0, weight=1)
         self.base_layer.grid_rowconfigure(0, weight=1)
         
@@ -165,7 +177,7 @@ class MyApp(ctk.CTk):
             width=400,
             height=300
         )
-        self.flayer_frame2.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+        self.flayer_frame2.grid(row=1, column=0, padx=0, pady=0, sticky="nsew")
         self.base_layer.grid_columnconfigure(0, weight=1)
         self.base_layer.grid_rowconfigure(1, weight=1)
     

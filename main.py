@@ -53,7 +53,7 @@ class RoundedWindow(ctk.CTk):
         self.background_frame = ctk.CTkFrame(
             self.canvas,
             corner_radius=20,
-            fg_color='#202020',
+            fg_color='#000055',
             width=800,
             height=800
         )
