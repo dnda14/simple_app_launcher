@@ -1,7 +1,7 @@
-logo1 nombre1 ubicacion1
-logo2 nombre2 ubicacion2
-logo3 nombre3 ubicacion3
-logo4 nombre4 ubicacion4
-logo5 nombre5 ubicacion5
-logo6 nombre6 ubicacion6
-logo7 nombre7 ubicacion7
+.\assets\obsidian_icon.png nombre1 ubicacion1
+.\assets\obsidian_icon.png nombre2 ubicacion2
+.\assets\obsidian_icon.png nombre3 ubicacion3
+.\assets\obsidian_icon.png nombre4 ubicacion4
+.\assets\obsidian_icon.png nombre5 ubicacion5
+.\assets\obsidian_icon.png nombre6 ubicacion6
+.\assets\obsidian_icon.png nombre7 ubicacion7
