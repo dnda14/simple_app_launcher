@@ -1,5 +1,3 @@
-
-
 import tkinter as tk
 from time import strftime
 
@@ -95,6 +93,9 @@ class GridFrame(ctk.CTkFrame):
     def get_list_cells(self):
         return self.list_cells
     
+    def get_list_items(self):
+        return self.list_items    
+    
     def update_logo_color(self, index):
         #if hasattr(logo_frame, 'label_logo'):
         label_logo2 = self.list_cells[index].children['!ctkframe'].children['!ctklabel']
@@ -159,6 +160,7 @@ class MyApp(ctk.CTk):
         self.bind("<Down>", self.show_frame_up)
         self.bind("<Right>", self.show_frame_right)
         self.bind("<Left>", self.show_frame_left)
+        self.bind("<Return>", self.selection_app)
 
     def center_window(self, width, height):
         screen_width = self.winfo_screenwidth()
@@ -175,6 +177,7 @@ class MyApp(ctk.CTk):
         self.current_position_x = 0
         self.lista_grid[self.current_position_y].update_logo_color(self.current_position_x)
         self.switch_frame_y(self.lista_grid[self.current_position_y])
+        self.current_frame_x = self.lista_grid[self.current_position_y].get_list_cells()[self.current_position_x]
         
 
     def show_frame_up(self, event):
@@ -183,6 +186,8 @@ class MyApp(ctk.CTk):
         self.current_position_x = 0
         self.lista_grid[self.current_position_y].update_logo_color(self.current_position_x)
         self.switch_frame_y(self.lista_grid[self.current_position_y])
+        self.current_frame_x = self.lista_grid[self.current_position_y].get_list_cells()[self.current_position_x]
+        
         
     def show_frame_right(self, event):
         self.lista_grid[self.current_position_y].reset_logo_color(self.current_position_x)
@@ -244,7 +249,10 @@ class MyApp(ctk.CTk):
     def create_clock(self):
         clock_frame = ClockFrame(self.flayer_frame1, corner_radius=40, fg_color='#101010', width=200, height=100)
         clock_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-        
+    
+    def selection_app(self, event):
+        print(self.lista_grid[self.current_position_y].get_list_items()[self.current_position_x]["ubicacion"])
+    
 if __name__ == "__main__":
     app = MyApp()
     app.mainloop()
