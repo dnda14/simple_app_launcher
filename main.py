@@ -1,21 +1,32 @@
+import subprocess
 import tkinter as tk
 from time import strftime
 
 import customtkinter as ctk
 from PIL import Image, ImageTk
 
+
+def run_application(shortcut_path):
+    try:
+        subprocess.Popen([shortcut_path], shell=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error ejecutando la aplicación: {e}")
+
 class ClockFrame(ctk.CTkFrame):
     def __init__(self, master=None, **kwargs):
         super().__init__(master, **kwargs)
-        self.label = ctk.CTkLabel(self, text="", font=("Arial", 80), text_color="#cc00ff", fg_color='#242424')
+        self.label = ctk.CTkLabel(
+            self, text="", font=("Arial", 80), text_color="#cc00ff", fg_color="#242424"
+        )
         self.label.pack(expand=True, fill=tk.BOTH)
         self.update_time()
 
     def update_time(self):
-        now = strftime("%H:%M:%S")          
+        now = strftime("%H:%M:%S")
         self.label.configure(text=now)
-        self.after(1000, self.update_time) 
-        
+        self.after(1000, self.update_time)
+
+
 def read_data_from_file(filename):
     items = []
     with open(filename, "r") as file:
@@ -43,8 +54,8 @@ class GridFrame(ctk.CTkFrame):
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=1)
 
-        self.list_cells=[]
-        
+        self.list_cells = []
+
         self.create_grid_items()
 
     def create_grid_items(self):
@@ -53,12 +64,12 @@ class GridFrame(ctk.CTkFrame):
                 self, corner_radius=10, fg_color="#242424", width=100, height=100
             )
             cell_frame.grid(row=0, column=i, padx=0, pady=0, sticky="nsew")
-            
+
             self.list_cells.append(cell_frame)
             cell_frame.grid_rowconfigure(0, weight=1)
             cell_frame.grid_rowconfigure(1, weight=1)
             cell_frame.grid_columnconfigure(0, weight=1)
-            
+
             logo_frame = ctk.CTkFrame(
                 cell_frame, corner_radius=10, fg_color="#242424", width=100, height=100
             )
@@ -72,41 +83,40 @@ class GridFrame(ctk.CTkFrame):
 
                 photo = ImageTk.PhotoImage(image_logo)
                 label_logo = ctk.CTkLabel(
-                    logo_frame, image=photo, text="", bg_color="#242424"  #chooooooooooooooose
+                    logo_frame, image=photo, text="", bg_color="#242424"
                 )
             else:
                 label_logo = ctk.CTkLabel(logo_frame, text="", bg_color="#242424")
-            #self.update_logo_color()
-            label_logo.grid(row=0,column=0,padx=0, pady=0, sticky="nsew")
+            label_logo.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
             label_logo.pack(expand=True, fill=tk.BOTH, padx=0, pady=0)
 
             title_frame = ctk.CTkFrame(
                 cell_frame, corner_radius=10, fg_color="#242424", width=130, height=0
             )
-            
+
             title_frame.grid(row=1, column=0, padx=0, pady=10, sticky="nsew")
             label_title = ctk.CTkLabel(
-                title_frame, text=item.get("nombre", f"Item {i+1}"), font=("Arial", 20), text_color="#cc00ff"
+                title_frame,
+                text=item.get("nombre", f"Item {i+1}"),
+                font=("Arial", 20),
+                text_color="#cc00ff",
             )
             label_title.pack(expand=True, fill=tk.BOTH, padx=0, pady=0)
-    
+
     def get_list_cells(self):
         return self.list_cells
-    
+
     def get_list_items(self):
-        return self.list_items    
-    
+        return self.list_items
+
     def update_logo_color(self, index):
-        #if hasattr(logo_frame, 'label_logo'):
-        label_logo2 = self.list_cells[index].children['!ctkframe'].children['!ctklabel']
+        label_logo2 = self.list_cells[index].children["!ctkframe"].children["!ctklabel"]
         label_logo2.configure(bg_color="#777777")
-        #self.list_cells[index].chil
+
     def reset_logo_color(self, index):
-        #if hasattr(logo_frame, 'label_logo'):
-        label_logo2 = self.list_cells[index].children['!ctkframe'].children['!ctklabel']
+        label_logo2 = self.list_cells[index].children["!ctkframe"].children["!ctklabel"]
         label_logo2.configure(bg_color="#242424")
 
-#grid_frame.update_label_logo_bg_color(grid_frame.list_cells[0].children['!ctkframe'].children['!ctklabel'], "#ff0000")
 
 class MyApp(ctk.CTk):
     def __init__(self):
@@ -116,25 +126,25 @@ class MyApp(ctk.CTk):
         self.center_window(450, 450)
         self.wm_attributes("-alpha", 1)
         self.wm_attributes("-transparentcolor", "#ffffff")
-        
+
         self.current_position_y = 0
         self.current_position_x = 0
-        
+
         self.base_layer = ctk.CTkFrame(
             self,
             corner_radius=20,
-            fg_color='#ffffff',
-            bg_color='#ffffff',
+            fg_color="#ffffff",
+            bg_color="#ffffff",
             width=400,
-            height=400
+            height=400,
         )
         self.base_layer.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-        
+
         self.create_grid_layer()
         self.create_clock()
         items = read_data_from_file("config.txt")
         self.rest = items.pop()
-        
+
         self.lista_grid = []
         self.n_rows = len(items)
         for i in range(self.n_rows):
@@ -149,12 +159,16 @@ class MyApp(ctk.CTk):
             )
 
         self.current_frame_y = self.lista_grid[self.current_position_y]
-        self.current_frame_x = self.lista_grid[self.current_position_y].get_list_cells()[self.current_position_x]
-        
+        self.current_frame_x = self.lista_grid[
+            self.current_position_y
+        ].get_list_cells()[self.current_position_x]
+
         self.lista_grid[self.current_position_y].pack(
             expand=True, fill=tk.BOTH, padx=0, pady=20
         )
-        self.lista_grid[self.current_position_y].update_logo_color(self.current_position_x)
+        self.lista_grid[self.current_position_y].update_logo_color(
+            self.current_position_x
+        )
 
         self.bind("<Up>", self.show_frame_below)
         self.bind("<Down>", self.show_frame_up)
@@ -167,50 +181,71 @@ class MyApp(ctk.CTk):
         screen_height = self.winfo_screenheight()
         x = (screen_width - width) // 2
         y = (screen_height - height) // 2
-        self.geometry(f'{width}x{height}+{x}+{y}')
-        self.config(bg='#ffffff')
-    
-    
+        self.geometry(f"{width}x{height}+{x}+{y}")
+        self.config(bg="#ffffff")
+
     def show_frame_below(self, event):
-        self.lista_grid[self.current_position_y].reset_logo_color(self.current_position_x)
+        self.lista_grid[self.current_position_y].reset_logo_color(
+            self.current_position_x
+        )
         self.current_position_y = (self.current_position_y + 1) % self.n_rows
         self.current_position_x = 0
-        self.lista_grid[self.current_position_y].update_logo_color(self.current_position_x)
+        self.lista_grid[self.current_position_y].update_logo_color(
+            self.current_position_x
+        )
         self.switch_frame_y(self.lista_grid[self.current_position_y])
-        self.current_frame_x = self.lista_grid[self.current_position_y].get_list_cells()[self.current_position_x]
-        
+        self.current_frame_x = self.lista_grid[
+            self.current_position_y
+        ].get_list_cells()[self.current_position_x]
 
     def show_frame_up(self, event):
-        self.lista_grid[self.current_position_y].reset_logo_color(self.current_position_x)
+        self.lista_grid[self.current_position_y].reset_logo_color(
+            self.current_position_x
+        )
         self.current_position_y = (self.current_position_y - 1) % self.n_rows
         self.current_position_x = 0
-        self.lista_grid[self.current_position_y].update_logo_color(self.current_position_x)
+        self.lista_grid[self.current_position_y].update_logo_color(
+            self.current_position_x
+        )
         self.switch_frame_y(self.lista_grid[self.current_position_y])
-        self.current_frame_x = self.lista_grid[self.current_position_y].get_list_cells()[self.current_position_x]
-        
-        
+        self.current_frame_x = self.lista_grid[
+            self.current_position_y
+        ].get_list_cells()[self.current_position_x]
+
     def show_frame_right(self, event):
-        self.lista_grid[self.current_position_y].reset_logo_color(self.current_position_x)
+        self.lista_grid[self.current_position_y].reset_logo_color(
+            self.current_position_x
+        )
         if self.current_position_y == (self.n_rows - 1):
-            self.current_position_x = (self.current_position_x + 1) % (3-self.rest)
+            self.current_position_x = (self.current_position_x + 1) % (3 - self.rest)
         else:
             self.current_position_x = (self.current_position_x + 1) % 3
-        
-        self.lista_grid[self.current_position_y].update_logo_color(self.current_position_x)
-         
-        self.current_frame_x = self.lista_grid[self.current_position_y].get_list_cells()[self.current_position_x]
-        
+
+        self.lista_grid[self.current_position_y].update_logo_color(
+            self.current_position_x
+        )
+
+        self.current_frame_x = self.lista_grid[
+            self.current_position_y
+        ].get_list_cells()[self.current_position_x]
+
     def show_frame_left(self, event):
-        self.lista_grid[self.current_position_y].reset_logo_color(self.current_position_x)
+        self.lista_grid[self.current_position_y].reset_logo_color(
+            self.current_position_x
+        )
         if self.current_position_y == (self.n_rows - 1):
-            self.current_position_x = (self.current_position_x - 1) % (3-self.rest)
+            self.current_position_x = (self.current_position_x - 1) % (3 - self.rest)
         else:
             self.current_position_x = (self.current_position_x - 1) % 3
-        
-        self.lista_grid[self.current_position_y].update_logo_color(self.current_position_x)
-        
-        self.current_frame_x = self.lista_grid[self.current_position_y].get_list_cells()[self.current_position_x]
-        
+
+        self.lista_grid[self.current_position_y].update_logo_color(
+            self.current_position_x
+        )
+
+        self.current_frame_x = self.lista_grid[
+            self.current_position_y
+        ].get_list_cells()[self.current_position_x]
+
     def switch_frame_y(self, new_frame):
         if self.current_frame_y:
             self.current_frame_y.pack_forget()
@@ -222,37 +257,38 @@ class MyApp(ctk.CTk):
             self.current_frame_y.pack_forget()
         self.current_frame_y = new_frame
         self.current_frame_y.pack(expand=True, fill=tk.BOTH, padx=20, pady=20)
-    
+
     def create_grid_layer(self):
         self.flayer_frame1 = ctk.CTkFrame(
-            self.base_layer,
-            corner_radius=20,
-            fg_color='#242424',  
-            width=400,
-            height=100
+            self.base_layer, corner_radius=20, fg_color="#242424", width=400, height=100
         )
         self.flayer_frame1.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
         self.base_layer.grid_columnconfigure(0, weight=1)
         self.base_layer.grid_rowconfigure(0, weight=1)
-        
+
         self.flayer_frame2 = ctk.CTkFrame(
-            self.base_layer,
-            corner_radius=20,
-            fg_color='#242424',  
-            width=400,
-            height=300
+            self.base_layer, corner_radius=20, fg_color="#242424", width=400, height=300
         )
         self.flayer_frame2.grid(row=1, column=0, padx=0, pady=0, sticky="nsew")
         self.base_layer.grid_columnconfigure(0, weight=1)
         self.base_layer.grid_rowconfigure(1, weight=1)
-    
+
     def create_clock(self):
-        clock_frame = ClockFrame(self.flayer_frame1, corner_radius=40, fg_color='#101010', width=200, height=100)
+        clock_frame = ClockFrame(
+            self.flayer_frame1,
+            corner_radius=40,
+            fg_color="#101010",
+            width=200,
+            height=100,
+        )
         clock_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-    
+
     def selection_app(self, event):
-        print(self.lista_grid[self.current_position_y].get_list_items()[self.current_position_x]["ubicacion"])
-    
+        path = self.lista_grid[self.current_position_y].get_list_items()[self.current_position_x]["ubicacion"]
+        print(path)
+        run_application(path)
+
+
 if __name__ == "__main__":
     app = MyApp()
     app.mainloop()
